@@ -24,25 +24,46 @@ class Solver():
 
 
 	def toString(self):
-		for row in range(0, MAX + 1):
+		for row in range(MIN, MAX + 1):
 			print(board[row])
 
-	def solve(self):
-		startingRow = 0
-		startingCol = 0
-		if board[startingRow][startingCol] != 0:
+
+
+	def isSolution(self, row, col, potentialSolution):
+		if not validateBoard(board):
+			return False
+
 
 			
 
 	def getNextAvailableAddress(self, row, col):
-		if col == MAX:
-			
+		while(1==1):
+			# End of the board?
+			if row==MAX and col==MAX:
+				print("max found")
+				return None
 
-			
+			# End of the row
+			if col==MAX:	
+				row += 1
+				col = MIN
+			else:
+				col += 1
 
-			
+			# Next available address found, return result
+			if board[row][col]==0:
+				return {"row":row, "column":col}
 
+	def solve(self):
+		# startingRow = 0
+		# startingCol = 0
+		# if board[startingRow][startingCol] != 0:
+		# 	getNextAvailableAddress['row']
+		# 	startingRow = getNextAvailableAddress['row']
+		# 	startingCol = getNextAvailableAddress['column']
 
+		# 	for i in range(1, MAX+1):
+		# 		if isSolution():
 
 
 
