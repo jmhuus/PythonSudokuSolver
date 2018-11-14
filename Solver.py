@@ -21,6 +21,19 @@ class Solver():
 		self.board = board
 
 
+	def solve(self):
+		print(self.validateBoard())
+		# startingRow = 0
+		# startingCol = 0
+		# if board[startingRow][startingCol] != 0:
+		# 	getNextAvailableAddress['row']
+		# 	startingRow = getNextAvailableAddress['row']
+		# 	startingCol = getNextAvailableAddress['column']
+
+		# 	for i in range(1, MAX+1):
+		# 		if isSolution():
+
+
 
 
 	def toString(self):
@@ -57,7 +70,7 @@ class Solver():
 	def validateBoard(self):
 		# Validate each row
 		for row in range(MIN, MAX+1):
-
+			
 			# Remove zeros
 			rowArray = list(filter(lambda a: a != 0, board[row]))
 
@@ -70,8 +83,9 @@ class Solver():
 		for column in range(MIN, MAX+1):
 
 			# Build column array
+			columnArray = []
 			for row in range(MIN, MAX+1):
-				columnArray = board[row][column]
+				columnArray.append(board[row][column])
 
 			# Remove zeros
 			columnArray = list(filter(lambda a: a != 0, columnArray))
@@ -88,26 +102,12 @@ class Solver():
 			# Remove zeros
 			gridArray = list(filter(lambda a: a != 0, gridArray))
 
-			print("invalid column: {}".format(column))
+			# Ensure unique values
 			if len(gridArray) != len(set(gridArray)):
 				return False
 
-
-
-
+		# Everything checks out
 		return True
-
-	def solve(self):
-		print(self.validateBoard())
-		# startingRow = 0
-		# startingCol = 0
-		# if board[startingRow][startingCol] != 0:
-		# 	getNextAvailableAddress['row']
-		# 	startingRow = getNextAvailableAddress['row']
-		# 	startingCol = getNextAvailableAddress['column']
-
-		# 	for i in range(1, MAX+1):
-		# 		if isSolution():
 
 	def getGridArray(self, gridIndex):
 		# TODO: refactor to account for varying sudoku puzzle sizes (use MIN/MAX)

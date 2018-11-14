@@ -10,5 +10,6 @@ gridDictionary = {
 				9:[[6,7,8],[6,7,8]]
 				}
 
-lst1 = [1,2,3,4,5]
-print(len(lst1)==len(set(lst1)))
+lst1 = [1,2,3,4,5,0,0,0,0]
+lst1.append(1)
+print(lst1)
