@@ -22,38 +22,50 @@ class Solver():
 
 
 	def solve(self):
-		print(self.validateBoard())
-		# startingRow = 0
-		# startingCol = 0
-		# if board[startingRow][startingCol] != 0:
-		# 	getNextAvailableAddress['row']
-		# 	startingRow = getNextAvailableAddress['row']
-		# 	startingCol = getNextAvailableAddress['column']
+		startingRow = 0
+		startingCol = 0
+		if board[startingRow][startingCol] != 0:
+			getNextAvailableAddress['row']
+			startingRow = getNextAvailableAddress['row']
+			startingCol = getNextAvailableAddress['column']
 
-		# 	for i in range(1, MAX+1):
-		# 		if isSolution():
-
-
+		for i in range(1, MAX+1):
+			if self.isSolution(startingRow, startingCol, i):
+				return True
 
 
-	def toString(self):
-		for row in range(MIN, MAX + 1):
-			print(board[row])
-
+		return False
 
 
 	def isSolution(self, row, col, potentialSolution):
-		if not validateBoard(board):
+		# New solution placement
+		self.board[row][col] = potentialSolution
+
+		# Invalid placement
+		if not self.validateBoard():
+			self.board[row][col] = 0
 			return False
 
+		# Current placement works, try the next; get the next address
+		nextAddress = self.getNextAvailableAddress(row, col)
 
-			
+		# Try subsequent solutions
+		for nextPotentialSolution in range(MIN+1, MAX+2):  # 1-9
+			if self.isSolution(nextAddress['row'], nextAddress['column'], nextPotentialSolution):
+				return True
+
+		# All subsequent solutions were invalid
+		self.board[row][columnArray] = 0
+		return False
+
+
+		
+
 
 	def getNextAvailableAddress(self, row, col):
-		while(1==1):
+		while True:
 			# End of the board?
 			if row==MAX and col==MAX:
-				print("max found")
 				return None
 
 			# End of the row
@@ -64,8 +76,9 @@ class Solver():
 				col += 1
 
 			# Next available address found, return result
-			if board[row][col]==0:
+			if self.board[row][col]==0:
 				return {"row":row, "column":col}
+
 
 	def validateBoard(self):
 		# Validate each row
@@ -76,7 +89,7 @@ class Solver():
 
 			# Ensure unique value
 			if len(rowArray) != len(set(rowArray)):
-				print("invalid row: {}".format(row))
+				print("invalid row: {}".format(rowArray))
 				return False
 
 		# Validate each column
@@ -92,7 +105,7 @@ class Solver():
 
 			# Ensure unique values
 			if len(columnArray) != len(set(columnArray)):
-				print("invalid column: {}".format(column))
+				print("invalid column: {}".format(columnArray))
 				return False
 
 		# Validate each grid
@@ -104,10 +117,12 @@ class Solver():
 
 			# Ensure unique values
 			if len(gridArray) != len(set(gridArray)):
+				print("invalid grid: {}".format(gridArray))
 				return False
 
 		# Everything checks out
 		return True
+
 
 	def getGridArray(self, gridIndex):
 		# TODO: refactor to account for varying sudoku puzzle sizes (use MIN/MAX)
@@ -141,3 +156,4 @@ class Solver():
 
 solver = Solver(board)
 solver.solve()
+print("Solved!")
