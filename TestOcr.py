@@ -1,81 +1,36 @@
-from PIL import Image
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 import pytesseract
-import argparse
-import cv2
-import os
+
+# If you don't have tesseract executable in your PATH, include the following:
+pytesseract.pytesseract.tesseract_cmd = r'<full_path_to_your_tesseract_executable>'
+# Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract'
+
+# Simple image to string
+print(pytesseract.image_to_string(Image.open('test.jpg')))
 
 
-# Online example
-# https://www.pyimagesearch.com/2017/07/10/using-tesseract-ocr-python/
+#================
+# # French text image to string
+# print(pytesseract.image_to_string(Image.open('test-european.jpg'), lang='fra'))
 
+# # Get bounding box estimates
+# print(pytesseract.image_to_boxes(Image.open('test.png')))
 
-# ===== construct the argument parse and parse the arguments =====
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--image", required=True,
-	help="path to input image to be OCR'd")
-ap.add_argument("-p", "--preprocess", type=str, default="thresh",
-	help="type of preprocessing to be done")
-args = vars(ap.parse_args())
+# # Get verbose data including boxes, confidences, line and page numbers
+# print(pytesseract.image_to_data(Image.open('test.png')))
 
+# # Get information about orientation and script detection
+# print(pytesseract.image_to_osd(Image.open('test.png')))
 
+# # In order to bypass the internal image conversions, just use relative or absolute image path
+# # NOTE: If you don't use supported images, tesseract will return error
+# print(pytesseract.image_to_string('test.png'))
 
-# =========== load the image, binarize it, and write it to disk =========
-sing Tesseract OCR with PythonPython
+# # get a searchable PDF
+# pdf = pytesseract.image_to_pdf_or_hocr('test.png', extension='pdf')
 
-# load the example image and convert it to grayscale
-image = cv2.imread(args["image"])
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-# check to see if we should apply thresholding to preprocess the
-# image
-if args["preprocess"] == "thresh":
-	gray = cv2.threshold(gray, 0, 255,
-		cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-
-# make a check to see if median blurring should be done to remove
-# noise
-elif args["preprocess"] == "blur":
-	gray = cv2.medianBlur(gray, 3)
-
-# write the grayscale image to disk as a temporary file so we can
-# apply OCR to it
-filename = "{}.png".format(os.getpid())
-cv2.imwrite(filename, gray)
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-# load the example image and convert it to grayscale
-image = cv2.imread(args["image"])
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
- 
-# check to see if we should apply thresholding to preprocess the
-# image
-if args["preprocess"] == "thresh":
-	gray = cv2.threshold(gray, 0, 255,
-		cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
- 
-# make a check to see if median blurring should be done to remove
-# noise
-elif args["preprocess"] == "blur":
-	gray = cv2.medianBlur(gray, 3)
- 
-# write the grayscale image to disk as a temporary file so we can
-# apply OCR to it
-filename = "{}.png".format(os.getpid())
-cv2.imwrite(filename, gray)
+# # get HOCR output
+# hocr = pytesseract.image_to_pdf_or_hocr('test.png', extension='hocr')
