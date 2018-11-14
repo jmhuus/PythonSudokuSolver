@@ -1,3 +1,5 @@
+from pprint import pprint
+
 MAX = 8
 MIN = 0
 
@@ -22,6 +24,7 @@ class Solver():
 
 
 	def solve(self):
+		# Locate the first unsolved cell
 		startingRow = 0
 		startingCol = 0
 		if board[startingRow][startingCol] != 0:
@@ -29,6 +32,7 @@ class Solver():
 			startingRow = getNextAvailableAddress['row']
 			startingCol = getNextAvailableAddress['column']
 
+		# Use the first unsolved cell to begin recursion isSolution()
 		for i in range(1, MAX+1):
 			if self.isSolution(startingRow, startingCol, i):
 				return True
@@ -48,18 +52,19 @@ class Solver():
 
 		# Current placement works, try the next; get the next address
 		nextAddress = self.getNextAvailableAddress(row, col)
+		if nextAddress is None:
+			return True
+		# print("{} {}".format(nextAddress['row'], nextAddress['column']))
 
 		# Try subsequent solutions
 		for nextPotentialSolution in range(MIN+1, MAX+2):  # 1-9
+			# print("trying solution {} for row:{} column:{}".format(nextPotentialSolution, row, col))
 			if self.isSolution(nextAddress['row'], nextAddress['column'], nextPotentialSolution):
 				return True
 
 		# All subsequent solutions were invalid
-		self.board[row][columnArray] = 0
+		self.board[row][col] = 0
 		return False
-
-
-		
 
 
 	def getNextAvailableAddress(self, row, col):
@@ -89,7 +94,7 @@ class Solver():
 
 			# Ensure unique value
 			if len(rowArray) != len(set(rowArray)):
-				print("invalid row: {}".format(rowArray))
+				# print("invalid row: {}".format(rowArray))
 				return False
 
 		# Validate each column
@@ -105,7 +110,7 @@ class Solver():
 
 			# Ensure unique values
 			if len(columnArray) != len(set(columnArray)):
-				print("invalid column: {}".format(columnArray))
+				# print("invalid column: {}".format(columnArray))
 				return False
 
 		# Validate each grid
@@ -117,7 +122,7 @@ class Solver():
 
 			# Ensure unique values
 			if len(gridArray) != len(set(gridArray)):
-				print("invalid grid: {}".format(gridArray))
+				# print("invalid grid: {}".format(gridArray))
 				return False
 
 		# Everything checks out
@@ -148,6 +153,10 @@ class Solver():
 		return gridArray
 
 
+	def toString(self):
+		pprint(self.board)
+
+
 
 
 
@@ -156,4 +165,5 @@ class Solver():
 
 solver = Solver(board)
 solver.solve()
+solver.toString()
 print("Solved!")
