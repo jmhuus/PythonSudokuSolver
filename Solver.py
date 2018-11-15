@@ -28,17 +28,16 @@ class Solver():
 		startingRow = 0
 		startingCol = 0
 		if board[startingRow][startingCol] != 0:
-			getNextAvailableAddress['row']
 			startingRow = getNextAvailableAddress['row']
 			startingCol = getNextAvailableAddress['column']
 
 		# Use the first unsolved cell to begin recursion isSolution()
 		for i in range(1, MAX+1):
 			if self.isSolution(startingRow, startingCol, i):
-				return True
+				return
 
 
-		return False
+		return
 
 
 	def isSolution(self, row, col, potentialSolution):
@@ -154,7 +153,7 @@ class Solver():
 
 
 	def toString(self):
-		pprint(self.board)
+		return self.board
 
 
 
@@ -165,5 +164,5 @@ class Solver():
 
 solver = Solver(board)
 solver.solve()
-solver.toString()
+pprint(solver.toString())
 print("Solved!")
