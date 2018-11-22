@@ -1,6 +1,11 @@
 Simple Sudoku Solver!
 
-This app is responsible for solving Sudoku puzzles using plain Python.
+Tools:
+- Open-CV
+- Pillow
+- Tesseract-OCR
+- PyTesseract
 
-Use Depth First Search to solve the puzzle, validating Sudoku correctness along
-the way to find the corrent solution path.
+1. Process image (Open-CV)
+2. Recognize Sudoku Cells (Tesseract-OCR)
+3. Solve puzzle (Depth-First-Search)
