@@ -9,8 +9,8 @@ from pprint import pprint
 class Board():
 
 	MAX_VALUE = 255
-	guassianBlurKernel = (3,3)
-	dialateKernel = np.ones((5,5),np.uint8)
+	guassianBlurKernel = (5,5)
+	dialateKernel = np.ones((7,7),np.uint8)
 	erodeKernel = np.ones((3,3),np.uint8)
 	rawImage = None
 
@@ -29,7 +29,7 @@ class Board():
 								["Color", "Threshold", "Erode", "GaussianBlur", "Canny", "Dialate"],
 								["Color", "Threshold", "Canny", "Dialate"]]
 
-		imageProccessOrders = [["Color", "Canny", "Dialate", "Threshold"]]
+		imageProccessOrders = [["Color", "Canny", "Dialate", "GaussianBlur", "Threshold"]]
 
 
 		# Retrieve sudoku cell regions
@@ -98,6 +98,12 @@ class Board():
 
 		edges, contours, hierarchy = cv.findContours(processedImage, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
+		width, height = edges.shape[:2]
+		imageArea = width * height
+		cellAreaMax = (imageArea * .80) / 81
+		cellAreaMin = (imageArea * .60) / 81
+		print("cellAreaMin: {}   cellAreaMax: {}".format(cellAreaMin, cellAreaMax))
+
 
 		cells = []					# Final contours to use as ROI(Region Of Interest)
 		alreadyVisitedContours = []	# List of visisted coordinates; some contours have the exact same location
@@ -108,8 +114,9 @@ class Board():
 
 			# Find all cell-like contours (cells that store sudoku numbers)
 			alreadyVisited = cnt[0][0].tolist() in alreadyVisitedContours
-			areaGreaterThan = cv.contourArea(cnt) >= 700
-			areaSmallerThan = cv.contourArea(cnt) <= 1200
+			areaGreaterThan = cv.contourArea(cnt) >= cellAreaMin
+			areaSmallerThan = cv.contourArea(cnt) <= cellAreaMax
+			print(cv.contourArea(cnt))
 			if areaGreaterThan and areaSmallerThan and not alreadyVisited:
 				alreadyVisitedContours.append(cnt[0][0].tolist())
 				cells.append(cnt)
