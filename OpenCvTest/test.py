@@ -20,47 +20,63 @@ class Board():
 
 	# Returns 2D array of sudoku board
 	def grabSudokuBoard(self):
+		imageProccessOrders = [["Color", "GaussianBlur", "Threshold", "Erode", "Canny", "Dialate"],
+								["Color", "Threshold", "GaussianBlur", "Erode", "Canny", "Dialate"],
+								["Color", "Threshold", "Erode", "GaussianBlur", "Canny", "Dialate"],
+								["Color", "Threshold", "Erode", "GaussianBlur", "Canny", "Dialate"]]
+
+
 		# Retrieve sudoku cell regions
-		preProcessedImage = self.getPreProcessedImage(self.rawImage)
-		cells = self.getCellContours(preProcessedImage)
+		for imageProccessOrder in range(len(imageProccessOrders))
+			processedImage = self.getProcessedImage(self.rawImage, imageProccessOrder)
+			cells = self.getCellContours(processedImage)
 
-		# Image not well processed
-		if len(cells) != 81:
-			print("error: trouble finding all sudoku cells. {} cells found.".format(len(cells)))
+			# Image not well processed
+			if len(cells) != 81:
+				print("error: trouble finding all sudoku cells. {} cells found.".format(len(cells)))
 
-		final = cv.drawContours(preProcessedImage, cells, -1, (0,255,0), 3)
-		cv.imwrite("final.png", final)
+			final = cv.drawContours(preProcessedImage, cells, -1, (0,255,0), 3)
+			cv.imwrite("final.png", final)
 
 		# Build ROI
 		
-
 		# Run OCR on ROI temp image
 
 		# Store ROI result into board array
 	
 
 	# Simple preprocessing
-	def getPreProcessedImage(self, img):
-		img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-		cv.imwrite("after_cvtColor.jpg", img)
-		ret, img = cv.threshold(img, 210, 255, cv.THRESH_BINARY)
-		cv.imwrite("after_threshold.jpg", img)
-		img = cv.GaussianBlur(img, (3,3), 0)
-		cv.imwrite("after_guassian.jpg", img)
+	def getProcessedImage(self, img, processOrder):
+
+		for imageProcess in processOrder:
+			if imageProcess == "GaussianBlur":
+				img = cv.GaussianBlur(img, (3,3), 0)
+
+			if imageProcess == "Threshold":
+				ret, img = cv.threshold(img, 210, 255, cv.THRESH_BINARY)
+
+			if imageProcess == "Color":
+				img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+			if imageProcess == "Canny":
+				img = cv.Canny(img,100,200)
+
+			if imageProcess == "Dialate":
+				img = cv.dilate(img, self.dialateKernel, iterations = 1)
+
+			if imageProcess == "Erode":
+				img = 
+
+
+			cv.imwrite("after_guassian.jpg", img)
 
 		return img
 
 
 	# Return an array of cell coordinates
 	def getCellContours(self, processedImage):
-		edges = cv.Canny(processedImage,100,200)
-		cv.imwrite("after_canny.jpg", edges)
-		edges = cv.dilate(edges, self.dialateKernel, iterations = 1)
-		cv.imwrite("after_dialate.jpg", edges)
+
 		edges, contours, hierarchy = cv.findContours(edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-
-
-
 
 		for i in range(10):
 			allContours = cv.drawContours(self.rawImage, contours[i], -1, (0,255,0), 3)
