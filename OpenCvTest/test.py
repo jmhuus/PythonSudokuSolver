@@ -9,7 +9,7 @@ from pprint import pprint
 class Board():
 
 	MAX_VALUE = 255
-	kernel = np.ones((3,3),np.uint8)
+	dialateKernel = np.ones((5,5),np.uint8)
 	rawImage = None
 
 
@@ -41,19 +41,34 @@ class Board():
 
 	# Simple preprocessing
 	def getPreProcessedImage(self, img):
+		img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+		cv.imwrite("after_cvtColor.jpg", img)
+		ret, img = cv.threshold(img, 210, 255, cv.THRESH_BINARY)
+		cv.imwrite("after_threshold.jpg", img)
 		img = cv.GaussianBlur(img, (3,3), 0)
 		cv.imwrite("after_guassian.jpg", img)
-		ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)
-		cv.imwrite("after_threshold.jpg", img)
 
 		return img
 
 
 	# Return an array of cell coordinates
-	def getCellContours(self, preProcessedImage):
-		img_eroded = cv.erode(preProcessedImage, self.kernel, iterations=1)
-		edges = cv.Canny(img_eroded,100,200)
+	def getCellContours(self, processedImage):
+		edges = cv.Canny(processedImage,100,200)
+		cv.imwrite("after_canny.jpg", edges)
+		edges = cv.dilate(edges, self.dialateKernel, iterations = 1)
+		cv.imwrite("after_dialate.jpg", edges)
 		edges, contours, hierarchy = cv.findContours(edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+
+
+
+		for i in range(10):
+			allContours = cv.drawContours(self.rawImage, contours[i], -1, (0,255,0), 3)
+			print("contour: {}   size: {}".format(i, cv.contourArea(contours[i])))
+			cv.imwrite("allContours{}.png".format(i), allContours)
+
+
+
 
 		cells = []					# Final contours to use as ROI(Region Of Interest)
 		alreadyVisitedContours = []	# List of visisted coordinates; some contours have the exact same location
