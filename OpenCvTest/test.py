@@ -10,7 +10,7 @@ class Board():
 
 	MAX_VALUE = 255
 	guassianBlurKernel = (3,3)
-	dialateKernel = np.ones((3,3),np.uint8)
+	dialateKernel = np.ones((5,5),np.uint8)
 	erodeKernel = np.ones((3,3),np.uint8)
 	rawImage = None
 
@@ -23,15 +23,18 @@ class Board():
 	# Returns 2D array of sudoku board
 	def grabSudokuBoard(self):
 
-		imageProccessOrders = [["Color", "GaussianBlur", "Threshold", "Erode", "Canny", "Dialate"],
-								["Color", "GaussianBlur", "Threshold", "Erode", "Canny", "Dialate"],
+		imageProccessOrders = [["Color", "GaussianBlur", "Threshold", "Canny", "Dialate"],
+								["Color", "Threshold", "Canny", "Dialate"],
+								["Color", "Threshold", "Erode", "Canny", "Dialate"],
 								["Color", "Threshold", "Erode", "GaussianBlur", "Canny", "Dialate"],
 								["Color", "Threshold", "Canny", "Dialate"]]
+
+		imageProccessOrders = [["Color", "Canny", "Dialate", "Threshold"]]
 
 
 		# Retrieve sudoku cell regions
 		for i in range(len(imageProccessOrders)):
-			
+
 			# Read image
 			raw = cv.imread(self.filePath)
 
@@ -39,16 +42,15 @@ class Board():
 			processedImage = self.getProcessedImage(raw, imageProccessOrders[i])
 
 			# Cell Contours
-			cells = self.getCellContours(processedImage)	
+			cells = self.getCellContours(processedImage)
 
 			# Image not well processed
-			if len(cells) != 81:
-				print("{} cells found.".format(len(cells)))
-				cv.imwrite("processedImage{}.png".format(i), processedImage)		
+			print("{} cells found.".format(len(cells)))
+			cv.imwrite("processedImage{}.png".format(i), processedImage)		
 
-				final = cv.drawContours(raw, cells, -1, (0,255,0), 3)					
-				cv.imwrite("processedImage_withContours{}.png".format(i), final)		
-				continue
+			final = cv.drawContours(raw, cells, -1, (0,255,0), 3)					
+			cv.imwrite("processedImage_withContours{}.png".format(i), final)
+			continue
 
 
 		# Build ROI
@@ -66,21 +68,27 @@ class Board():
 		for imageProcess in processOrder:
 			if imageProcess == "GaussianBlur":
 				img = cv.GaussianBlur(img, self.guassianBlurKernel, 0)
+				cv.imwrite("GaussianBlur.png", img)
 
 			if imageProcess == "Threshold":
 				ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)
+				cv.imwrite("Threshold.png", img)
 
 			if imageProcess == "Color":
 				img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+				cv.imwrite("Color.png", img)
 
 			if imageProcess == "Canny":
 				img = cv.Canny(img,100,200)
+				cv.imwrite("Canny.png", img)
 
 			if imageProcess == "Dialate":
 				img = cv.dilate(img, self.dialateKernel, iterations = 1)
+				cv.imwrite("Dialate.png", img)
 
 			if imageProcess == "Erode":
 				img = cv.erode(img, self.erodeKernel, iterations=1)
+				cv.imwrite("Erode.png", img)
 
 		return img
 
@@ -113,6 +121,6 @@ class Board():
 
 
 
-filePath = "../test_images/expert_02.png"
+filePath = "../test_images/puzzle_02.jpg"
 imageProcessing = Board(filePath)
 imageProcessing.grabSudokuBoard()
