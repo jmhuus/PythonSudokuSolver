@@ -20,14 +20,31 @@ class Board():
 
 	# Returns 2D array of sudoku board
 	def grabSudokuBoard(self):
+		# Retrieve sudoku cell regions
 		preProcessedImage = self.getPreProcessedImage(self.rawImage)
 		cells = self.getCellContours(preProcessedImage)
+
+		# Image not well processed
+		if len(cells) != 81:
+			print("error: trouble finding all sudoku cells. {} cells found.".format(len(cells)))
+
+		final = cv.drawContours(preProcessedImage, cells, -1, (0,255,0), 3)
+		cv.imwrite("final.png", final)
+
+		# Build ROI
+		
+
+		# Run OCR on ROI temp image
+
+		# Store ROI result into board array
 	
 
 	# Simple preprocessing
 	def getPreProcessedImage(self, img):
 		img = cv.GaussianBlur(img, (3,3), 0)
+		cv.imwrite("after_guassian.jpg", img)
 		ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)
+		cv.imwrite("after_threshold.jpg", img)
 
 		return img
 
@@ -55,11 +72,11 @@ class Board():
 
 		return cells
 		
-		
 
 
 
 
-filePath = "../test_images/expert_02.PNG"
+
+filePath = "../test_images/puzzle_02.jpg"
 imageProcessing = Board(filePath)
 imageProcessing.grabSudokuBoard()
