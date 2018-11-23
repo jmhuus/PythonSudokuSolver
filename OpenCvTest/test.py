@@ -23,13 +23,63 @@ class Board():
 	# Returns 2D array of sudoku board
 	def grabSudokuBoard(self):
 
-		imageProccessOrders = [["Color", "GaussianBlur", "Threshold", "Canny", "Dialate"],
-								["Color", "Threshold", "Canny", "Dialate"],
-								["Color", "Threshold", "Erode", "Canny", "Dialate"],
-								["Color", "Threshold", "Erode", "GaussianBlur", "Canny", "Dialate"],
-								["Color", "Threshold", "Canny", "Dialate"]]
+		imageProccessOrders = [
+								{	"Color":None, "GaussianBlur":(5,5), 	
+									"Threshold":[127,255],
+									"Canny":[100,200], 					
+									"Dialate":np.ones((3,3), np.uint8)	},
 
-		imageProccessOrders = [["Color", "Canny", "Dialate", "GaussianBlur", "Threshold"]]
+								{	"Color":None,
+									"Threshold":[127,255],
+									"Canny":[100,200],
+									"Dialate":np.ones((3,3), np.uint8)	},
+
+								{	"Color":None,
+									"Threshold":[127,255],
+									"Erode":np.ones((3,3),np.uint8),
+									"Canny":[100,200],
+									"Dialate":np.ones((3,3), np.uint8)	},
+
+								{	"Color":None,
+									"Threshold":[127,255],
+									"Erode":np.ones((3,3),np.uint8),
+									"GaussianBlur":(5,5),
+									"Canny":[100,200],
+									"Dialate":np.ones((3,3), np.uint8)	},
+
+								{	"Color":None,
+									"GaussianBlur":(3,3),
+									"Threshold":[127,255],
+									"Erode":np.ones((3,3),np.uint8),
+									"Canny":[75,200],
+									"Dialate":np.ones((3,3), np.uint8)	},
+
+									# Thin boardered boards
+								{	"Color":None,
+									"Canny":[100,200],
+									"Dialate":np.ones((7,7), np.uint8),
+									"GaussianBlur":(5,5),
+									"Threshold":[127,255]				},
+
+									# This line boards 2
+								{	"Color":None,
+									"Canny":[30,45],
+									"Dialate":np.ones((3,3), np.uint8),
+									"Threshold":[127,255],
+									"Erode":np.ones((3,3),np.uint8),
+									"GaussianBlur":(3,3),
+									"Opening":np.ones((2,2), np.uint8)		},
+
+									# Low resolution images
+								{	"Color":None,
+									"Opening":np.ones((4,4), np.uint8),
+									"Canny":[180,250],
+									"Opening":np.ones((4,4), np.uint8),
+									"GaussianBlur":(3,3),
+									"Threshold":[80, 255],
+									"Dialate":np.ones((4,4), np.uint8),
+									"Erode":np.ones((4,4),np.uint8)		}
+							]
 
 
 		# Retrieve sudoku cell regions
@@ -45,7 +95,7 @@ class Board():
 			cells = self.getCellContours(processedImage)
 
 			# Image not well processed
-			print("{} cells found.".format(len(cells)))
+			print("{} {} cells found.".format(i, len(cells)))
 			cv.imwrite("processedImage{}.png".format(i), processedImage)		
 
 			final = cv.drawContours(raw, cells, -1, (0,255,0), 3)					
@@ -63,32 +113,34 @@ class Board():
 	# Simple preprocessing
 	def getProcessedImage(self, img, processOrder):
 
-		print(processOrder)
-
-		for imageProcess in processOrder:
-			if imageProcess == "GaussianBlur":
-				img = cv.GaussianBlur(img, self.guassianBlurKernel, 0)
+		for key, value in processOrder.items():
+			if key == "GaussianBlur":
+				img = cv.GaussianBlur(img, value, 0)
 				cv.imwrite("GaussianBlur.png", img)
 
-			if imageProcess == "Threshold":
-				ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)
+			if key == "Threshold":
+				ret, img = cv.threshold(img, value[0], value[1], cv.THRESH_BINARY)
 				cv.imwrite("Threshold.png", img)
 
-			if imageProcess == "Color":
+			if key == "Color":
 				img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 				cv.imwrite("Color.png", img)
 
-			if imageProcess == "Canny":
-				img = cv.Canny(img,100,200)
+			if key == "Canny":
+				img = cv.Canny(img.copy(),value[0],value[1])
 				cv.imwrite("Canny.png", img)
 
-			if imageProcess == "Dialate":
-				img = cv.dilate(img, self.dialateKernel, iterations = 1)
+			if key == "Dialate":
+				img = cv.dilate(img, value, iterations = 1)
 				cv.imwrite("Dialate.png", img)
 
-			if imageProcess == "Erode":
-				img = cv.erode(img, self.erodeKernel, iterations=1)
+			if key == "Erode":
+				img = cv.erode(img, value, iterations=1)
 				cv.imwrite("Erode.png", img)
+
+			if key == "Opening":
+				img = cv.morphologyEx(img, cv.MORPH_OPEN, value)
+				cv.imwrite("Opening.png", img)
 
 		return img
 
@@ -98,12 +150,11 @@ class Board():
 
 		edges, contours, hierarchy = cv.findContours(processedImage, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
+		# Estimate sudoku cell size
 		width, height = edges.shape[:2]
 		imageArea = width * height
 		cellAreaMax = (imageArea * .80) / 81
-		cellAreaMin = (imageArea * .60) / 81
-		print("cellAreaMin: {}   cellAreaMax: {}".format(cellAreaMin, cellAreaMax))
-
+		cellAreaMin = (imageArea * .50) / 81
 
 		cells = []					# Final contours to use as ROI(Region Of Interest)
 		alreadyVisitedContours = []	# List of visisted coordinates; some contours have the exact same location
@@ -116,7 +167,6 @@ class Board():
 			alreadyVisited = cnt[0][0].tolist() in alreadyVisitedContours
 			areaGreaterThan = cv.contourArea(cnt) >= cellAreaMin
 			areaSmallerThan = cv.contourArea(cnt) <= cellAreaMax
-			print(cv.contourArea(cnt))
 			if areaGreaterThan and areaSmallerThan and not alreadyVisited:
 				alreadyVisitedContours.append(cnt[0][0].tolist())
 				cells.append(cnt)
@@ -128,6 +178,6 @@ class Board():
 
 
 
-filePath = "../test_images/puzzle_02.jpg"
+filePath = "../test_images/puzzle_05.jpg"
 imageProcessing = Board(filePath)
 imageProcessing.grabSudokuBoard()
