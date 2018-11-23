@@ -4,12 +4,9 @@ except ImportError:
     import Image
 import pytesseract
 
-# If you don't have tesseract executable in your PATH, include the following:
-# pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR'
-# Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract'
 
 # Simple image to string
-print(pytesseract.image_to_string(Image.open('random_numbers.png')))
+print(pytesseract.image_to_string(Image.open("test_images/random_number_single.jpg")))
 
 
 
