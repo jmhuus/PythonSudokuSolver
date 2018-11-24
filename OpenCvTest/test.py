@@ -61,7 +61,7 @@ class Board():
 									"GaussianBlur":(5,5),
 									"Threshold":[127,255]				},
 
-									# This line boards 2
+									# Thin line boards 2
 								{	"Color":None,
 									"Canny":[30,45],
 									"Dialate":np.ones((3,3), np.uint8),
@@ -178,6 +178,6 @@ class Board():
 
 
 
-filePath = "../test_images/puzzle_05.jpg"
+filePath = "../test_images/puzzle_06.jpg"
 imageProcessing = Board(filePath)
 imageProcessing.grabSudokuBoard()
