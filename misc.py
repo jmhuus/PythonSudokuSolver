@@ -3,13 +3,11 @@ import cv2 as cv
 import numpy as np
 
 
-# [[RGB, RGB, RGB, RGB, RGB, RGB], [RGB, RGB, RGB, RGB, RGB, RGB]]
-subImage = []
-for row in range(x):
+image = []
+for row in range(264, 295):
 	newRow = []
-	for col in range(500):
-		newRow.append([255,0,0])
+	for col in range(263, 297):
+		newRow.append([row, col])
+	image.append(newRow)
 
-	subImage.append(newRow)
-
-cv.imwrite("customImage.png", np.asarray(subImage))
+pprint(image)

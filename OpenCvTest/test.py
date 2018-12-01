@@ -106,7 +106,11 @@ class Board():
 				break
 
 		i = 0
-		for cell in cells:
+		for cell in boardCells:
+			# Read image
+			raw = cv.imread(self.filePath)
+
+
 			# Bounding rectangle coordinates
 			x, y, w, h = cv.boundingRect(cell)
 
@@ -118,32 +122,16 @@ class Board():
 
 			# Build sub-image using the bounding rectangle
 			subImage = []
-			for row in range(yMin, yMin+1):
+			for row in range(yMin, yMax+1):
 				newRow = []
 				for col in range(xMin, xMax+1):
-					newRow.append(raw[row][col])
+					newRow.append(raw[row][col].tolist())
 				subImage.append(newRow)
 
 			# Save image
 			i += 1
-			cv.imwrite("cell_{}.png".format(i), np.asarray(subImage))
-
-
-
-
-		
-			# 	# Run OCR on ROI temp image
-
-			# 	# Store ROI result into board array
-			# 	board = readBoard(cells)
-			
-			# print("{} {} cells found.".format(i, len(cells)))
-			# cv.imwrite("processedImage{}.png".format(i), processedImage)		
-
-			# final = cv.drawContours(raw, cells, -1, (0,255,0), 3)					
-			# cv.imwrite("processedImage_withContours{}.png".format(i), final)
-			# continue
-
+			subImage = np.asarray(subImage)
+			cv.imwrite("cell_{}.png".format(i), subImage)
 
 
 	
