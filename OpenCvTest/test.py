@@ -83,6 +83,7 @@ class Board():
 
 
 		# Retrieve sudoku cell regions
+		boardCells = None
 		for i in range(len(imageProccessOrders)):
 
 			# Read image
@@ -94,20 +95,57 @@ class Board():
 			# Cell Contours
 			cells = self.getCellContours(processedImage)
 
-			# Image not well processed
-			print("{} {} cells found.".format(i, len(cells)))
-			cv.imwrite("processedImage{}.png".format(i), processedImage)		
 
-			final = cv.drawContours(raw, cells, -1, (0,255,0), 3)					
-			cv.imwrite("processedImage_withContours{}.png".format(i), final)
-			continue
+			height = len(raw)
+			width = len(raw[0])
 
 
-		# Build ROI
+			# 81 distinct cells found
+			if len(cells) == 81:
+				boardCells = cells
+				break
+
+		i = 0
+		for cell in cells:
+			# Bounding rectangle coordinates
+			x, y, w, h = cv.boundingRect(cell)
+
+			# Retrieve min/max values for X/Y
+			xMin = x-w
+			xMax = x
+			yMin = y-h
+			yMax = y
+
+			# Build sub-image using the bounding rectangle
+			subImage = []
+			for row in range(yMin, yMin+1):
+				newRow = []
+				for col in range(xMin, xMax+1):
+					newRow.append(raw[row][col])
+				subImage.append(newRow)
+
+			# Save image
+			i += 1
+			cv.imwrite("cell_{}.png".format(i), np.asarray(subImage))
+
+
+
+
 		
-		# Run OCR on ROI temp image
+			# 	# Run OCR on ROI temp image
 
-		# Store ROI result into board array
+			# 	# Store ROI result into board array
+			# 	board = readBoard(cells)
+			
+			# print("{} {} cells found.".format(i, len(cells)))
+			# cv.imwrite("processedImage{}.png".format(i), processedImage)		
+
+			# final = cv.drawContours(raw, cells, -1, (0,255,0), 3)					
+			# cv.imwrite("processedImage_withContours{}.png".format(i), final)
+			# continue
+
+
+
 	
 
 	# Simple preprocessing
@@ -116,31 +154,31 @@ class Board():
 		for key, value in processOrder.items():
 			if key == "GaussianBlur":
 				img = cv.GaussianBlur(img, value, 0)
-				cv.imwrite("GaussianBlur.png", img)
+				# cv.imwrite("GaussianBlur.png", img)
 
 			if key == "Threshold":
 				ret, img = cv.threshold(img, value[0], value[1], cv.THRESH_BINARY)
-				cv.imwrite("Threshold.png", img)
+				# cv.imwrite("Threshold.png", img)
 
 			if key == "Color":
 				img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-				cv.imwrite("Color.png", img)
+				# cv.imwrite("Color.png", img)
 
 			if key == "Canny":
 				img = cv.Canny(img.copy(),value[0],value[1])
-				cv.imwrite("Canny.png", img)
+				# cv.imwrite("Canny.png", img)
 
 			if key == "Dialate":
 				img = cv.dilate(img, value, iterations = 1)
-				cv.imwrite("Dialate.png", img)
+				# cv.imwrite("Dialate.png", img)
 
 			if key == "Erode":
 				img = cv.erode(img, value, iterations=1)
-				cv.imwrite("Erode.png", img)
+				# cv.imwrite("Erode.png", img)
 
 			if key == "Opening":
 				img = cv.morphologyEx(img, cv.MORPH_OPEN, value)
-				cv.imwrite("Opening.png", img)
+				# cv.imwrite("Opening.png", img)
 
 		return img
 
@@ -148,7 +186,7 @@ class Board():
 	# Return an array of cell coordinates
 	def getCellContours(self, processedImage):
 
-		edges, contours, hierarchy = cv.findContours(processedImage, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+		edges, contours, hierarchy = cv.findContours(processedImage, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
 
 		# Estimate sudoku cell size
 		width, height = edges.shape[:2]
@@ -157,13 +195,13 @@ class Board():
 		cellAreaMin = (imageArea * .50) / 81
 
 		cells = []					# Final contours to use as ROI(Region Of Interest)
-		alreadyVisitedContours = []	# List of visisted coordinates; some contours have the exact same location
+		alreadyVisitedContours = []	# List of visited coordinates; some contours have the exact same location
 		for i in range(len(contours)):
 
 			# Curent contour (selection area)
 			cnt = contours[i]
 
-			# Find all cell-like contours (cells that store sudoku numbers)
+			# Find all cell-like contours (cells that store Sudoku numbers)
 			alreadyVisited = cnt[0][0].tolist() in alreadyVisitedContours
 			areaGreaterThan = cv.contourArea(cnt) >= cellAreaMin
 			areaSmallerThan = cv.contourArea(cnt) <= cellAreaMax
@@ -178,6 +216,6 @@ class Board():
 
 
 
-filePath = "../test_images/puzzle_06.jpg"
+filePath = "../test_images/expert_02.png"
 imageProcessing = Board(filePath)
 imageProcessing.grabSudokuBoard()
