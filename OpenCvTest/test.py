@@ -105,33 +105,41 @@ class Board():
 				boardCells = cells
 				break
 
+			# TODO: raise error when complete board is unfound
+			print("Complete board not found")
+
+
+		# Process images into numbers
 		i = 0
 		for cell in boardCells:
-			# Read image
-			raw = cv.imread(self.filePath)
-
-
-			# Bounding rectangle coordinates
-			x, y, w, h = cv.boundingRect(cell)
-
-			# Retrieve min/max values for X/Y
-			xMin = x-w
-			xMax = x
-			yMin = y-h
-			yMax = y
-
-			# Build sub-image using the bounding rectangle
-			subImage = []
-			for row in range(yMin, yMax+1):
-				newRow = []
-				for col in range(xMin, xMax+1):
-					newRow.append(raw[row][col].tolist())
-				subImage.append(newRow)
-
-			# Save image
+			subImage = self.getSubimage(cv.imread(self.filePath), cell)
 			i += 1
-			subImage = np.asarray(subImage)
-			cv.imwrite("cell_{}.png".format(i), subImage)
+			cv.imwrite("image_{}.png".format(i), subImage)
+
+
+
+
+	def getSubimage(self, raw, cell):
+
+		# Bounding rectangle coordinates
+		x, y, w, h = cv.boundingRect(cell)
+
+		# Retrieve min/max values for X/Y
+		xMin = x-w
+		xMax = x
+		yMin = y-h
+		yMax = y
+
+		# Build sub-image using the bounding rectangle
+		subImage = []
+		for row in range(yMin, yMax+1):
+			newRow = []
+			for col in range(xMin, xMax+1):
+				newRow.append(raw[row][col].tolist())
+			subImage.append(newRow)
+
+		# Return image
+		return np.asarray(subImage)
 
 
 	
