@@ -51,10 +51,6 @@ class SampleApp(tk.Tk):
         # self.geometry("500x500")
         self.title("Sudoku Solver")
 
-        bgImage = tk.PhotoImage(file="blank-sudoku-grid.png")
-        bgLabel = tk.Label(self, image=bgImage)
-        bgLabel.place(x=0, y=0, relwidth=1, relheight=1)
-
         # Init frames
         self.boardFrame = tk.Frame(self)
         self.buttonFrame = tk.Frame(self)
@@ -64,8 +60,6 @@ class SampleApp(tk.Tk):
         for row in range(9):
         	for col in range(9):
         		self.cells[str(row)+str(col)] = tk.Entry(self.boardFrame, width=4)
-
-
         self.cancel = tk.Button(self.buttonFrame, text="Cancel", command=self.quit)
         self.solveBoard = tk.Button(self.buttonFrame, text="Solve", command=self.solveBoard)
 
@@ -81,7 +75,21 @@ class SampleApp(tk.Tk):
         for row in range(9):
         	for col in range(9):
         		address = str(row)+str(col)
-        		self.cells[address].grid(row=row, column=col)
+
+        		# Row padding
+        		if (row+1)%3 == 0:
+        			pady=(0,4)
+        		else:
+        			pady=0
+
+        		# Column padding
+        		if (col+1)%3 == 0:
+        			padx=(0,4)
+        		else:
+        			padx=0
+
+        		# Place cell into grid
+        		self.cells[address].grid(row=row, column=col, padx=padx, pady=pady)
         
         
 
