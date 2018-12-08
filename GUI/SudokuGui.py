@@ -51,28 +51,36 @@ class SampleApp(tk.Tk):
         # self.geometry("500x500")
         self.title("Sudoku Solver")
 
-        # Init frames
-        self.boardFrame = tk.Frame(self)
-        self.buttonFrame = tk.Frame(self)
+        # Build widgets
+        self.initButtons()
+        self.initSudokuBoard()
+        
 
-        # Init widgets
-        self.cells = {}
-        for row in range(9):
+
+    def initButtons(self):
+    	# Frame
+    	self.buttonFrame = tk.Frame(self)
+    	self.buttonFrame.pack(side="bottom", padx=10, pady=10)
+
+    	# Buttons
+    	self.cancel = tk.Button(self.buttonFrame, text="Cancel", command=self.quit)
+    	self.solveBoard = tk.Button(self.buttonFrame, text="Solve", command=self.solveBoard)
+    	self.solveBoard.grid(column=0, row=1)
+    	self.cancel.grid(column=1, row=1)
+
+    def initSudokuBoard(self):
+    	# Frame
+    	self.boardFrame = tk.Frame(self)
+    	self.boardFrame.pack(side="top", padx=30, pady=10)
+
+    	# Build entries
+    	self.cells = {}
+    	for row in range(9):
         	for col in range(9):
         		self.cells[str(row)+str(col)] = tk.Entry(self.boardFrame, width=4)
-        self.cancel = tk.Button(self.buttonFrame, text="Cancel", command=self.quit)
-        self.solveBoard = tk.Button(self.buttonFrame, text="Solve", command=self.solveBoard)
 
-
-        # Place frames
-        self.boardFrame.pack(side="top", padx=30, pady=10)
-        self.buttonFrame.pack(side="bottom", padx=10, pady=10)
-
-
-        # Pack the widgets
-        self.solveBoard.grid(column=0, row=1)
-        self.cancel.grid(column=1, row=1)
-        for row in range(9):
+        # Place entries into grid
+    	for row in range(9):
         	for col in range(9):
         		address = str(row)+str(col)
 
@@ -90,7 +98,6 @@ class SampleApp(tk.Tk):
 
         		# Place cell into grid
         		self.cells[address].grid(row=row, column=col, padx=padx, pady=pady)
-        
         
 
     def solveBoard(self):
