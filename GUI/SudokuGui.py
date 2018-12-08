@@ -47,29 +47,40 @@ class SampleApp(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
+        # Window size
         self.geometry("500x500")
+
+        bgImage = tk.PhotoImage(file="blank-sudoku-grid.png")
+        bgLabel = tk.Label(self, image=bgImage)
+        bgLabel.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Init frames
         self.boardFrame = tk.Frame(self)
         self.buttonFrame = tk.Frame(self)
 
         # Init widgets
-        self.cell00 = tk.Entry(self.boardFrame, width=4)
-        self.cell01 = tk.Entry(self.boardFrame, width=4)
-        self.cell02 = tk.Entry(self.boardFrame, width=4)
-        self.cell03 = tk.Entry(self.boardFrame, width=4)
-        self.cell04 = tk.Entry(self.boardFrame, width=4)
+        self.cells = {}
+        for row in range(10):
+        	for col in range(10):
+        		self.cells[str(row)+str(col)] = tk.Entry(self.boardFrame, width=4)
+
+
         self.cancel = tk.Button(self.buttonFrame, text="Cancel", command=self.quit)
         self.solveBoard = tk.Button(self.buttonFrame, text="Solve", command=self.solveBoard)
+
 
         # Place frames
         self.boardFrame.pack(side="top")
         self.buttonFrame.pack(side="bottom")
 
+
         # Pack the widgets
-        self.cell00.grid(column=1, row=1)
-        self.solveBoard.pack(side="left")
-        self.cancel.pack(side="left")
+        self.solveBoard.grid(column=0, row=1)
+        self.cancel.grid(column=1, row=1)
+        for row in range(10):
+        	for col in range(10):
+        		address = str(row)+str(col)
+        		self.cells[address].grid(row=row, column=col)
         
         
 
@@ -79,7 +90,8 @@ class SampleApp(tk.Tk):
     	# Solve board
 
     	# Display result
-    	print(self.cell00.get())
+    	print("solved")
+
 
 app = SampleApp()
 app.mainloop()
