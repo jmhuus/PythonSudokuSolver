@@ -112,14 +112,48 @@ class Board():
 		# Process images into numbers
 		i = 0
 		for cell in boardCells:
-			subImage = self.getSubimage(cv.imread(self.filePath), cell)
+
+			# Thin the boarders of the original image
+			# Cells located, boarders irrelevant
+			processDetails = {"Threshold":[127,255],"Dialate":np.ones((2,2), np.uint8)}
+			processedAgain = self.getProcessedImage(cv.imread(self.filePath), processDetails)
+
+			# Build subimage of the cell
+			subImage = self.getSubImage(processedAgain, cell)
+
+			# Crop the edges
+			margin = 5
+			cropped = subImage[margin:-margin,margin:-margin]
+
+			# Dialate the number
+			processDetails = {"Threshold":[127,255],"Erode":np.ones((3,3),np.uint8)}
+			dialated = self.getProcessedImage(cropped, processDetails)
+
+			# Extend the image width and height
+			extended = self.extendSubimage(dialated)
+			
+			# Place a letter for Tesseract-OCR to have a reference
+			height = subImage.shape[0]
+			width = subImage.shape[1]
+			font                   = cv.FONT_HERSHEY_SIMPLEX
+			bottomLeftCornerOfText = (round(width*.03),round(height*.75))
+			fontScale              = 0.75
+			fontColor              = (0,0,0)
+			lineType               = 2
+			cv.putText(extended,'h', 
+			    bottomLeftCornerOfText, 
+			    font, 
+			    fontScale,
+			    fontColor,
+			    lineType)
+
+			# Write the image
 			i += 1
-			cv.imwrite("image_{}.png".format(i), subImage)
+			cv.imwrite("image_{}.png".format(i), extended)
 
 
 
-
-	def getSubimage(self, raw, cell):
+	def getSubImage(self, raw, cell):
 
 		# Bounding rectangle coordinates
 		x, y, w, h = cv.boundingRect(cell)
@@ -140,6 +174,25 @@ class Board():
 
 		# Return image
 		return np.asarray(subImage)
+
+
+
+	def extendSubimage(self, subImage):
+
+		# Create blankImage scaled image
+		extendedHeight = round(subImage.shape[0] * 2)
+		extendedWidth = round(subImage.shape[1] * 3.5)
+		blankImage = np.zeros((extendedHeight, extendedWidth, 3), np.uint8)
+		blankImage.fill(255)
+		
+		# place subImage onto blankImage
+		x_offset=30
+		y_offset=10
+		blankImage[y_offset:y_offset+subImage.shape[0], x_offset:x_offset+subImage.shape[1]] = subImage
+
+		return blankImage
+
+
 
 
 	

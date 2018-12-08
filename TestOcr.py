@@ -6,7 +6,7 @@ import pytesseract
 
 
 # Simple image to string
-print(pytesseract.image_to_string(Image.open("test_images/random_number_single.jpg")))
+print(pytesseract.image_to_string(Image.open("OpenCvTest/image_69.png")))
 
 
 
