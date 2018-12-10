@@ -3,18 +3,6 @@ from pprint import pprint
 MAX = 8
 MIN = 0
 
-board = [
-	[0,0,6,0,0,0,0,0,4],
-	[0,0,0,8,6,0,7,3,0],
-	[0,4,0,3,5,0,0,0,2],
-	[1,7,0,4,0,0,6,0,0],
-	[0,9,0,0,0,0,0,8,0],
-	[0,0,8,0,0,6,0,1,7],
-	[2,0,0,0,8,1,0,4,0],
-	[0,6,7,0,4,3,0,0,0],
-	[8,0,0,0,0,0,3,0,0]
-]
-
 
 
 class Solver():
@@ -27,17 +15,17 @@ class Solver():
 		# Locate the first unsolved cell
 		startingRow = 0
 		startingCol = 0
-		if board[startingRow][startingCol] != 0:
+		if self.board[startingRow][startingCol] != 0:
 			startingRow = getNextAvailableAddress['row']
 			startingCol = getNextAvailableAddress['column']
 
 		# Use the first unsolved cell to begin recursion isSolution()
 		for i in range(1, MAX+1):
 			if self.isSolution(startingRow, startingCol, i):
-				return
+				return self.board
 
 
-		return
+		return self.board
 
 
 	def isSolution(self, row, col, potentialSolution):
@@ -89,7 +77,7 @@ class Solver():
 		for row in range(MIN, MAX+1):
 			
 			# Remove zeros
-			rowArray = list(filter(lambda a: a != 0, board[row]))
+			rowArray = list(filter(lambda a: a != 0, self.board[row]))
 
 			# Ensure unique value
 			if len(rowArray) != len(set(rowArray)):
@@ -102,7 +90,7 @@ class Solver():
 			# Build column array
 			columnArray = []
 			for row in range(MIN, MAX+1):
-				columnArray.append(board[row][column])
+				columnArray.append(self.board[row][column])
 
 			# Remove zeros
 			columnArray = list(filter(lambda a: a != 0, columnArray))
@@ -146,7 +134,7 @@ class Solver():
 		for row in range(MIN, MAX+1):
 			for col in range(MIN, MAX+1):
 				if row in gridDictionary[gridIndex][0] and col in gridDictionary[gridIndex][1]:
-					gridArray.append(board[row][col])
+					gridArray.append(self.board[row][col])
 
 
 		return gridArray
@@ -154,15 +142,3 @@ class Solver():
 
 	def toString(self):
 		return self.board
-
-
-
-
-
-
-
-
-solver = Solver(board)
-solver.solve()
-pprint(solver.toString())
-print("Solved!")
