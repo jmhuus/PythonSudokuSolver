@@ -16,6 +16,7 @@ class SampleApp(tk.Tk):
         # Build widgets
         self.initButtons()
         self.initSudokuBoard()
+        self.initMessageDisplay()
         
 
 
@@ -60,15 +61,30 @@ class SampleApp(tk.Tk):
 
                 # Place cell into grid
                 self.cells[address].grid(row=row, column=col, padx=padx, pady=pady)
+
+    def initMessageDisplay(self):
+        # Frame
+        self.messageFrame = tk.Frame(self)
+        self.messageFrame.pack(side="bottom", padx=10, pady=10)
+
+        # Buttons
+        self.messageLabel = tk.Label(self.messageFrame, text="Test")
+        self.messageLabel.grid(column=1, row=2)
         
 
     def retreiveBoard(self):
+
+        # Build array from user input
         board = []
         for row in range(9):
+
+            # Build one row at a time
             newRow = []
             for col in range(9):
-                address = str(row)+str(col)
 
+                # Ensure user input is correct during retrieval
+                # TODO: ensure integers 1-9
+                address = str(row)+str(col)
                 try:
                     if self.cells[address].get() != '':
                         newRow.append(int(self.cells[address].get()))
@@ -78,10 +94,10 @@ class SampleApp(tk.Tk):
                     self.notifyUser("Non-number found in cell.")
                     return None
 
-
+            # Append row to board
             board.append(newRow)
-
         return board
+
 
     def notifyUser(self, message):
         print(message)
@@ -106,8 +122,8 @@ class SampleApp(tk.Tk):
                 self.cells[address].delete(0, 'end')
                 self.cells[address].insert(0, solvedBoard[row][col])
 
-
-        print("solved")
+        # Display solved
+        self.messageLabel.config(text="Solved!")
         pprint(solvedBoard)
 
 
