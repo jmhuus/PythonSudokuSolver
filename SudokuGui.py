@@ -99,6 +99,14 @@ class SampleApp(tk.Tk):
         solvedBoard = solver.solve()
 
         # Display result
+        for row in range(9):
+            for col in range(9):
+
+                address = str(row)+str(col)
+                self.cells[address].delete(0, 'end')
+                self.cells[address].insert(0, solvedBoard[row][col])
+
+
         print("solved")
         pprint(solvedBoard)
 
