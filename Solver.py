@@ -16,8 +16,8 @@ class Solver():
 		startingRow = 0
 		startingCol = 0
 		if self.board[startingRow][startingCol] != 0:
-			startingRow = getNextAvailableAddress['row']
-			startingCol = getNextAvailableAddress['column']
+			startingRow = self.getNextAvailableAddress(startingRow, startingCol)['row']
+			startingCol = self.getNextAvailableAddress(startingRow, startingCol)['column']
 
 		# Use the first unsolved cell to begin recursion isSolution()
 		for i in range(1, MAX+1):
