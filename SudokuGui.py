@@ -27,9 +27,11 @@ class SampleApp(tk.Tk):
 
         # Buttons
         self.cancel = tk.Button(self.buttonFrame, text="Cancel", command=self.quit)
+        self.resetBoard = tk.Button(self.buttonFrame, text="Reset", command=self.resetBoard)
         self.solveBoard = tk.Button(self.buttonFrame, text="Solve", command=self.solveBoard)
         self.solveBoard.grid(column=0, row=1)
-        self.cancel.grid(column=1, row=1)
+        self.resetBoard.grid(column=1, row=1)
+        self.cancel.grid(column=2, row=1)
 
     def initSudokuBoard(self):
         # Frame
@@ -68,7 +70,7 @@ class SampleApp(tk.Tk):
         self.messageFrame.pack(side="bottom", padx=10, pady=10)
 
         # Buttons
-        self.messageLabel = tk.Label(self.messageFrame, text="Test")
+        self.messageLabel = tk.Label(self.messageFrame)
         self.messageLabel.grid(column=1, row=2)
         
 
@@ -125,6 +127,20 @@ class SampleApp(tk.Tk):
         # Display solved
         self.messageLabel.config(text="Solved!")
         pprint(solvedBoard)
+
+    def resetBoard(self):
+
+    	# Empty entire grid
+    	for row in range(9):
+    		for col in range(9):
+    			address = str(row)+str(col)
+    			self.cells[address].delete(0, 'end')
+
+    	# Set cursor to (0,0) cell
+    	self.cells[str(0)+str(0)].icursor(0)
+
+    	# Empty display message
+    	self.messageLabel.config(text="")
 
 
 app = SampleApp()
