@@ -20,8 +20,6 @@ class SampleApp(tk.Tk):
         self.initButtons()
         self.initSudokuBoard()
         self.initMessageDisplay()
-        
-
 
     def initButtons(self):
         # Frame
@@ -75,7 +73,7 @@ class SampleApp(tk.Tk):
         # Buttons
         self.messageLabel = tk.Label(self.messageFrame)
         self.messageLabel.grid(column=1, row=2)
-        
+     
 
     def retreiveBoard(self):
 
@@ -103,11 +101,6 @@ class SampleApp(tk.Tk):
             board.append(newRow)
         return board
 
-
-    def notifyUser(self, message):
-        print(message)
-
-
     def solveBoard(self):
         
         # Retrieve user input
@@ -129,7 +122,6 @@ class SampleApp(tk.Tk):
 
         # Display solved
         self.messageLabel.config(text="Solved!")
-        pprint(solvedBoard)
 
     def resetBoard(self):
 
@@ -165,9 +157,7 @@ class Solver():
 			if self.isSolution(startingRow, startingCol, i):
 				return self.board
 
-
 		return self.board
-
 
 	def isSolution(self, row, col, potentialSolution):
 		# New solution placement
@@ -182,11 +172,9 @@ class Solver():
 		nextAddress = self.getNextAvailableAddress(row, col)
 		if nextAddress is None:
 			return True
-		# print("{} {}".format(nextAddress['row'], nextAddress['column']))
 
 		# Try subsequent solutions
 		for nextPotentialSolution in range(MIN+1, MAX+2):  # 1-9
-			# print("trying solution {} for row:{} column:{}".format(nextPotentialSolution, row, col))
 			if self.isSolution(nextAddress['row'], nextAddress['column'], nextPotentialSolution):
 				return True
 
@@ -212,7 +200,6 @@ class Solver():
 			if self.board[row][col]==0:
 				return {"row":row, "column":col}
 
-
 	def validateBoard(self):
 		# Validate each row
 		for row in range(MIN, MAX+1):
@@ -222,7 +209,6 @@ class Solver():
 
 			# Ensure unique value
 			if len(rowArray) != len(set(rowArray)):
-				# print("invalid row: {}".format(rowArray))
 				return False
 
 		# Validate each column
@@ -238,7 +224,6 @@ class Solver():
 
 			# Ensure unique values
 			if len(columnArray) != len(set(columnArray)):
-				# print("invalid column: {}".format(columnArray))
 				return False
 
 		# Validate each grid
@@ -250,12 +235,10 @@ class Solver():
 
 			# Ensure unique values
 			if len(gridArray) != len(set(gridArray)):
-				# print("invalid grid: {}".format(gridArray))
 				return False
 
 		# Everything checks out
 		return True
-
 
 	def getGridArray(self, gridIndex):
 		# TODO: refactor to account for varying sudoku puzzle sizes (use MIN/MAX)
@@ -280,16 +263,12 @@ class Solver():
 
 		return gridArray
 
-
 	def toString(self):
 		return self.board
 
 
 
-
-
-
-
+# Open UI
 app = SampleApp()
 app.mainloop()
 

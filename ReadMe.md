@@ -1,8 +1,5 @@
 Simple Sudoku Solver!
 
-Tools:
+- DFS Recursion
 - Tkinter
-- Open-CV
-- Pillow
-- Tesseract-OCR
-- PyTesseract
+
